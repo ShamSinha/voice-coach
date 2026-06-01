@@ -57,16 +57,33 @@ struct RecorderView: View {
             Text("Session Focus")
                 .font(.headline)
 
-            Picker("Session Focus", selection: $selectedFocus) {
-                ForEach(PracticeFocus.allCases) { focus in
-                    Label(focus.rawValue, systemImage: focus.symbolName)
-                        .tag(focus)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 10) {
+                    ForEach(PracticeFocus.allCases) { focus in
+                        focusButton(focus)
+                    }
                 }
+                .padding(.vertical, 2)
             }
-            .pickerStyle(.menu)
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .coachCard()
+    }
+
+    private func focusButton(_ focus: PracticeFocus) -> some View {
+        let isSelected = selectedFocus == focus
+
+        return Button {
+            selectedFocus = focus
+        } label: {
+            Label(focus.rawValue, systemImage: focus.symbolName)
+                .font(.subheadline.weight(.semibold))
+                .lineLimit(1)
+                .foregroundStyle(isSelected ? Color.white : Color.primary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 9)
+                .background(isSelected ? Color.teal : Color(.secondarySystemGroupedBackground), in: Capsule())
+        }
+        .buttonStyle(.plain)
     }
 
     private var transcriptPanel: some View {
