@@ -47,6 +47,8 @@ struct SessionDetailView: View {
                 }
 
                 scoreBreakdown
+                aiCoach
+                acousticReadout
                 recommendations
                 transcript
             }
@@ -90,6 +92,9 @@ struct SessionDetailView: View {
             scoreBar(title: "Clarity", score: session.metrics.clarityScore, color: .orange)
             scoreBar(title: "Presence", score: session.metrics.executivePresenceScore, color: .indigo)
             scoreBar(title: "Storytelling", score: session.metrics.storytellingScore, color: .mint)
+            if let persuasionScore = session.metrics.persuasionScore {
+                scoreBar(title: "Persuasion", score: persuasionScore, color: .pink)
+            }
         }
         .coachCard()
     }
@@ -116,6 +121,116 @@ struct SessionDetailView: View {
             }
             .frame(height: 8)
         }
+    }
+
+    @ViewBuilder
+    private var aiCoach: some View {
+        if let aiCoaching = session.aiCoaching {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Label("AI Coach", systemImage: "brain.head.profile")
+                        .font(.headline)
+
+                    Spacer()
+
+                    Text(aiCoaching.source)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+
+                Text(aiCoaching.summary)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                HStack(spacing: 12) {
+                    compactAIStat(title: "Fillers", value: "\(aiCoaching.fillerWords)")
+                    compactAIStat(title: "Persuasion", value: "\(aiCoaching.persuasion)")
+                }
+            }
+            .coachCard()
+        }
+    }
+
+    @ViewBuilder
+    private var acousticReadout: some View {
+        if let acousticMetrics = session.acousticMetrics {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Audio Features")
+                    .font(.headline)
+
+                LazyVGrid(columns: columns, spacing: 12) {
+                    acousticTile(
+                        title: "Pitch F0",
+                        value: acousticMetrics.meanPitchHz.map { "\($0.wholeNumber) Hz" } ?? "-",
+                        subtitle: acousticMetrics.pitchRangeHz.map { "Range \($0.wholeNumber) Hz" } ?? "Range unavailable"
+                    )
+
+                    acousticTile(
+                        title: "Jitter",
+                        value: acousticMetrics.jitterPercent.map { "\($0.oneDecimal)%" } ?? "-",
+                        subtitle: "Period variation"
+                    )
+
+                    acousticTile(
+                        title: "Shimmer",
+                        value: acousticMetrics.shimmerPercent.map { "\($0.oneDecimal)%" } ?? "-",
+                        subtitle: "Amplitude variation"
+                    )
+
+                    acousticTile(
+                        title: "Silence",
+                        value: "\(acousticMetrics.silenceDuration.oneDecimal)s",
+                        subtitle: "\((acousticMetrics.silenceRatio * 100).oneDecimal)% of frames"
+                    )
+
+                    acousticTile(
+                        title: "Energy",
+                        value: acousticMetrics.meanEnergy.oneDecimal,
+                        subtitle: "Variation \(acousticMetrics.energyVariation.oneDecimal)"
+                    )
+                }
+            }
+            .coachCard()
+        }
+    }
+
+    private func compactAIStat(title: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+
+            Text(value)
+                .font(.headline.monospacedDigit())
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(12)
+        .background(.teal.opacity(0.10), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+    }
+
+    private func acousticTile(title: String, value: String, subtitle: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+
+            Text(value)
+                .font(.headline.monospacedDigit())
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+
+            Text(subtitle)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(12)
+        .background(Color.secondary.opacity(0.10), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
     private var recommendations: some View {

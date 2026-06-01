@@ -3,6 +3,7 @@ import SwiftUI
 struct RecorderView: View {
     @ObservedObject var store: SessionStore
     @StateObject private var recorder = RecordingManager()
+    @StateObject private var coach = OnDeviceCoach()
     @State private var selectedFocus: PracticeFocus = .technicalInterview
     @State private var savedSession: SpeechSession?
 
@@ -37,6 +38,8 @@ struct RecorderView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .coachCard()
                     }
+
+                    aiStatusPanel
 
                     if let savedSession {
                         savedSessionCard(savedSession)
@@ -93,6 +96,28 @@ struct RecorderView: View {
         .coachCard()
     }
 
+    private var aiStatusPanel: some View {
+        HStack(spacing: 12) {
+            Image(systemName: coach.isAnalyzing ? "brain.head.profile" : "sparkles")
+                .font(.headline)
+                .foregroundStyle(coach.isAnalyzing ? .orange : .teal)
+                .frame(width: 28, height: 28)
+                .background((coach.isAnalyzing ? Color.orange : Color.teal).opacity(0.14), in: Circle())
+
+            Text(coach.statusMessage)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Spacer(minLength: 0)
+
+            if coach.isAnalyzing {
+                ProgressView()
+            }
+        }
+        .coachCard()
+    }
+
     private func savedSessionCard(_ session: SpeechSession) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 14) {
@@ -101,6 +126,11 @@ struct RecorderView: View {
                 VStack(alignment: .leading, spacing: 5) {
                     Text("Saved")
                         .font(.headline)
+                    if session.isAIEnhanced {
+                        Text("AI-enhanced")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.teal)
+                    }
                     Text(session.date.sessionLabel)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
@@ -121,6 +151,11 @@ struct RecorderView: View {
             if let session = recorder.stopRecording(focus: selectedFocus) {
                 store.add(session)
                 savedSession = session
+                Task {
+                    let enhancedSession = await coach.enhance(session)
+                    store.update(enhancedSession)
+                    savedSession = enhancedSession
+                }
             }
         } else {
             savedSession = nil

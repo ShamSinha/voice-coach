@@ -83,6 +83,12 @@ struct DashboardView: View {
 
                 Spacer()
 
+                if session.isAIEnhanced {
+                    Image(systemName: "sparkles")
+                        .foregroundStyle(.teal)
+                        .accessibilityLabel("AI enhanced")
+                }
+
                 Text(session.duration.compactDuration)
                     .font(.subheadline.monospacedDigit())
                     .foregroundStyle(.secondary)

@@ -6,21 +6,24 @@ The MVP runs locally on the phone:
 
 - Records audio with `AVFoundation`
 - Transcribes with Apple's `Speech` framework
-- Scores pace, filler words, pauses, vocal consistency, clarity, confidence, executive presence, and storytelling
+- Extracts acoustic features: pitch/F0, pitch range, jitter, shimmer, speaking rate, silence duration, and energy
+- Scores pace, filler words, pauses, vocal consistency, clarity, confidence, executive presence, storytelling, and persuasion
+- Enhances coaching with Apple Foundation Models when building/running on iOS 26+ with Apple Intelligence available
 - Saves session history on device
 - Shows score trends and filler-word trends over time
 
 ## Model Direction
 
-The current app uses a deterministic local analyzer so the core product is fast, private, and easy to run.
+The app uses a deterministic local analyzer first so the core product is fast, private, and easy to run. It also includes an optional Apple Foundation Models layer behind `#if canImport(FoundationModels)`.
 
-For a stronger AI layer, the best iOS-first choices are:
+Current behavior:
 
-1. Apple Foundation Models for iOS 26+ devices with Apple Intelligence enabled. This avoids bundling a multi-GB model and is the cleanest on-device path for native Swift apps.
-2. Gemma through Google AI Edge / LiteRT once the iOS runtime and exact Gemma 4 variant are stable on your target phone.
-3. A cloud fallback for long-form transcript review if you later want higher-quality coaching and do not require fully offline mode.
+1. Every recording gets local transcript and acoustic analysis.
+2. If Foundation Models is available, the transcript plus local metrics are sent to Apple's on-device model through `LanguageModelSession`.
+3. The model returns structured scores and recommendations through guided generation.
+4. If Foundation Models is unavailable, the app keeps the local scores and shows an availability message.
 
-The app is intentionally structured so the analyzer can be replaced or augmented by an on-device LLM provider later.
+Gemma through Google AI Edge / LiteRT is still a good future option once the iOS runtime and exact Gemma 4 variant are stable on your target phone.
 
 ## Open
 

@@ -22,6 +22,7 @@ final class RecordingManager: ObservableObject {
     private var volumeSamples: [Double] = []
     private var audioURL: URL?
     private let analyzer = SpeechAnalyzer()
+    private let audioFeatureExtractor = AudioFeatureExtractor()
     private enum RecordingError: LocalizedError {
         case speechUnavailable
 
@@ -68,12 +69,14 @@ final class RecordingManager: ObservableObject {
         isRecording = false
 
         let duration = max(elapsedTime, Date().timeIntervalSince(recordingStartDate ?? .now))
+        let acousticMetrics = extractAcousticMetrics()
         let analysis = analyzer.analyze(
             transcript: transcript,
             focus: focus,
             duration: duration,
             segments: latestSegments,
-            volumeSamples: volumeSamples
+            volumeSamples: volumeSamples,
+            acousticMetrics: acousticMetrics
         )
 
         let formatter = DateFormatter()
@@ -88,7 +91,8 @@ final class RecordingManager: ObservableObject {
             segments: latestSegments,
             metrics: analysis.metrics,
             recommendations: analysis.recommendations,
-            audioFileName: audioURL?.lastPathComponent
+            audioFileName: audioURL?.lastPathComponent,
+            acousticMetrics: acousticMetrics
         )
 
         return session
@@ -219,6 +223,11 @@ final class RecordingManager: ObservableObject {
         let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let fileName = "session-\(UUID().uuidString).caf"
         return documents.appendingPathComponent(fileName)
+    }
+
+    private func extractAcousticMetrics() -> AcousticMetrics? {
+        guard let audioURL else { return nil }
+        return try? audioFeatureExtractor.extract(from: audioURL)
     }
 
     nonisolated private static func normalizedAudioLevel(from buffer: AVAudioPCMBuffer) -> Double {

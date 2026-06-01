@@ -25,6 +25,8 @@
 		010000000000000000000010 /* SessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000010 /* SessionDetailView.swift */; };
 		010000000000000000000011 /* ProgressScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000011 /* ProgressScreen.swift */; };
 		010000000000000000000012 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000012 /* Assets.xcassets */; };
+		010000000000000000000013 /* AudioFeatureExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000015 /* AudioFeatureExtractor.swift */; };
+		010000000000000000000014 /* OnDeviceCoach.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000016 /* OnDeviceCoach.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +50,8 @@
 		020000000000000000000012 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		020000000000000000000013 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		020000000000000000000014 /* VoiceCoach.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VoiceCoach.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		020000000000000000000015 /* AudioFeatureExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFeatureExtractor.swift; sourceTree = "<group>"; };
+		020000000000000000000016 /* OnDeviceCoach.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnDeviceCoach.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +103,8 @@
 				020000000000000000000005 /* SessionStore.swift */,
 				020000000000000000000006 /* SpeechAnalyzer.swift */,
 				020000000000000000000007 /* RecordingManager.swift */,
+				020000000000000000000015 /* AudioFeatureExtractor.swift */,
+				020000000000000000000016 /* OnDeviceCoach.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -219,6 +225,8 @@
 				010000000000000000000005 /* SessionStore.swift in Sources */,
 				010000000000000000000006 /* SpeechAnalyzer.swift in Sources */,
 				010000000000000000000007 /* RecordingManager.swift in Sources */,
+				010000000000000000000013 /* AudioFeatureExtractor.swift in Sources */,
+				010000000000000000000014 /* OnDeviceCoach.swift in Sources */,
 				010000000000000000000008 /* CardStyle.swift in Sources */,
 				010000000000000000000009 /* ScoreRing.swift in Sources */,
 				01000000000000000000000A /* MetricTile.swift in Sources */,

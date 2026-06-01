@@ -21,7 +21,8 @@ struct SpeechAnalyzer {
         focus: PracticeFocus,
         duration: TimeInterval,
         segments: [TranscriptSegment],
-        volumeSamples: [Double]
+        volumeSamples: [Double],
+        acousticMetrics: AcousticMetrics?
     ) -> (metrics: SessionMetrics, recommendations: [String]) {
         let words = words(in: transcript)
         let wordCount = words.count
@@ -34,11 +35,16 @@ struct SpeechAnalyzer {
         let longestPause = pauses.max() ?? 0
         let uniqueWordRatio = uniqueRatio(words)
         let volumeStats = volumeStatistics(volumeSamples)
+        let acousticVolumeConsistency = acousticMetrics.map {
+            max(0, min(100, 100 - $0.energyVariation * 120))
+        }
+        let effectiveVolumeConsistency = acousticVolumeConsistency ?? volumeStats.consistency
+        let effectiveEnergyVariation = acousticMetrics?.energyVariation ?? volumeStats.variation
 
         let paceScore = scoreAroundTarget(wordsPerMinute, target: 145, tolerance: 45)
         let fillerScore = clamp(100 - Int((fillerWordsPerMinute * 13).rounded()))
         let pauseScore = pauseScore(average: averagePause, longest: longestPause)
-        let volumeScore = Int(volumeStats.consistency.rounded())
+        let volumeScore = Int(effectiveVolumeConsistency.rounded())
         let lexicalScore = clamp(Int((uniqueWordRatio * 100).rounded()))
 
         let clarity = weightedScore([
@@ -76,8 +82,8 @@ struct SpeechAnalyzer {
             fillerWordsPerMinute: fillerWordsPerMinute,
             averagePause: averagePause,
             longestPause: longestPause,
-            volumeConsistency: volumeStats.consistency,
-            energyVariation: volumeStats.variation,
+            volumeConsistency: effectiveVolumeConsistency,
+            energyVariation: effectiveEnergyVariation,
             wordCount: wordCount,
             uniqueWordRatio: uniqueWordRatio
         )

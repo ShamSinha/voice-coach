@@ -35,6 +35,13 @@ final class SessionStore: ObservableObject {
         save()
     }
 
+    func update(_ session: SpeechSession) {
+        guard let index = sessions.firstIndex(where: { $0.id == session.id }) else { return }
+        sessions[index] = session
+        sessions.sort { $0.date > $1.date }
+        save()
+    }
+
     func delete(_ session: SpeechSession) {
         sessions.removeAll { $0.id == session.id }
         save()
