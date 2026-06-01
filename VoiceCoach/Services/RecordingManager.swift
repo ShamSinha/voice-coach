@@ -33,7 +33,9 @@ final class RecordingManager: ObservableObject {
     func requestPermissions() async -> Bool {
         async let speechAllowed = requestSpeechPermission()
         async let microphoneAllowed = requestMicrophonePermission()
-        let allowed = await speechAllowed && microphoneAllowed
+        let speechPermissionGranted = await speechAllowed
+        let microphonePermissionGranted = await microphoneAllowed
+        let allowed = speechPermissionGranted && microphonePermissionGranted
         if !allowed {
             errorMessage = "Microphone and speech recognition permissions are required."
         }
