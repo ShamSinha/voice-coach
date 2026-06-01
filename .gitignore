@@ -1,0 +1,8 @@
+.DS_Store
+DerivedData/
+*.xcuserdata/
+*.xcuserstate
+*.moved-aside
+*.ipa
+*.dSYM.zip
+*.dSYM
