@@ -68,7 +68,7 @@ private struct FoundationSpeechCoachingOutput {
         AICoachingResult(
             confidence: confidence.clampedScore,
             clarity: clarity.clampedScore,
-            fillerWords: max(0, fillerWords),
+            fillerWords: Swift.max(0, fillerWords),
             executivePresence: executivePresence.clampedScore,
             storytelling: storytelling.clampedScore,
             persuasion: persuasion.clampedScore,
@@ -145,6 +145,6 @@ private struct FoundationModelSpeechCoach {
 
 private extension Int {
     var clampedScore: Int {
-        min(100, max(0, self))
+        Swift.min(100, Swift.max(0, self))
     }
 }

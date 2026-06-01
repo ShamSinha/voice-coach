@@ -122,7 +122,7 @@ struct SpeechSession: Identifiable, Codable, Equatable {
         let totalWeight = parts.reduce(0) { $0 + $1.1 }
         guard totalWeight > 0 else { return 0 }
         let score = parts.reduce(0) { $0 + Double($1.0) * $1.1 } / totalWeight
-        return min(100, max(0, Int(score.rounded())))
+        return Swift.min(100, Swift.max(0, Int(score.rounded())))
     }
 }
 
